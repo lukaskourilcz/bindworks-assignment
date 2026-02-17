@@ -106,10 +106,18 @@ export async function DELETE(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = Number(searchParams.get("id"));
 
-  const index = todos.findIndex((t) => t.id === id);
-  if (index > -1) {
-    todos.splice(index, 1);
+  if (!id || typeof id !== "number") {
+    return NextResponse.json(
+      { error: "ID is required and must be a number." },
+      { status: 400 },
+    );
   }
+
+  const index = todos.findIndex((t) => t.id === id);
+  if (index === -1) {
+    return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+  }
+  todos.splice(index, 1);
 
   return NextResponse.json({ success: true });
 }
