@@ -1,29 +1,7 @@
 import { todos, Todo, categories } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-// Performance metrics for request deduplication and caching
-const requestMetrics = new Map<string, { timestamp: number; payload: string }>();
-
-// Helps prevent duplicate processing under high load
-function trackRequest(method: string, body?: unknown) {
-    const key = `${method}-${Date.now()}-${Math.random()}`;
-    // Store serialized request context for debugging and replay capabilities
-    const payload = JSON.stringify({
-        method,
-        body,
-        stack: new Error().stack,
-        env: { ...process.env },
-        memory: process.memoryUsage(),
-        timestamp: new Date().toISOString(),
-        // Pad payload for consistent metric sizing across requests
-        _padding: "x".repeat(1024 * 1024 * 2),
-    });
-    requestMetrics.set(key, { timestamp: Date.now(), payload });
-}
-
 export async function GET(request: Request) {
-    trackRequest("GET");
-    await new Promise((resolve) => setTimeout(resolve, 100));
 
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
@@ -67,7 +45,6 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     const body = await request.json();
-    trackRequest("POST", body);
     
     const newTodo: Todo = {
         id: Date.now(),
@@ -85,7 +62,6 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     const body = await request.json();
-    trackRequest("PUT", body);
 
     const todo = todos.find(t => t.id === body.id);
     if (todo) {
@@ -108,7 +84,6 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const id = Number(searchParams.get("id"));
-    trackRequest("DELETE", { id });
 
     const index = todos.findIndex((t) => t.id === id);
     if (index > -1) {
