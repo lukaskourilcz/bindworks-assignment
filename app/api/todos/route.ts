@@ -30,9 +30,24 @@ export async function GET(request: Request) {
     );
   }
 
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
+  const limit = Math.max(
+    1,
+    Math.min(100, Number(searchParams.get("limit")) || 20),
+  );
+
+  const start = (page - 1) * limit;
+  const paginated = filtered.slice(start, start + limit);
+
   return NextResponse.json({
-    todos: filtered,
+    todos: paginated,
     categories,
+    pagination: {
+      page,
+      limit,
+      total: filtered.length,
+      totalPages: Math.ceil(filtered.length / limit),
+    },
     stats: {
       total: todos.length,
       completed: todos.filter((t) => t.done).length,

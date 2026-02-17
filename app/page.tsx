@@ -98,6 +98,10 @@ export default function Home() {
   // Debounce search
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
@@ -109,14 +113,22 @@ export default function Home() {
         if (filterCategory !== "all") params.set("category", filterCategory);
         if (filterPriority !== "all") params.set("priority", filterPriority);
         if (filterStatus !== "all") params.set("status", filterStatus);
-        if (debouncedSearch) params.set("search", searchQuery);
+        if (debouncedSearch) params.set("search", debouncedSearch);
+        params.set("page", String(page));
+        params.set("limit", "20");
 
         const res = await fetch(`/api/todos?${params}`, { signal });
         const data = await res.json();
 
-        setTodos(data.todos);
+        if (page === 1) {
+          setTodos(data.todos);
+        } else {
+          setTodos((prev) => [...prev, ...data.todos]);
+        }
+
         setCategories(data.categories);
         setStats(data.stats);
+        setTotalPages(data.pagination.totalPages);
         setLoading(false);
       } catch (error: unknown) {
         if (error instanceof Error && error.name !== "AbortError") {
@@ -130,7 +142,7 @@ export default function Home() {
     return () => {
       controller.abort();
     };
-  }, [filterCategory, filterPriority, filterStatus, debouncedSearch]);
+  }, [filterCategory, filterPriority, filterStatus, debouncedSearch, page]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -138,6 +150,10 @@ export default function Home() {
     }, 300);
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filterCategory, filterPriority, filterStatus, debouncedSearch]);
 
   const addTodo = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,6 +199,7 @@ export default function Home() {
       setTodos((prev) => prev.map((t) => (t.id === tempId ? created : t)));
       setStats((s) => ({ ...s, total: s.total + 1, active: s.active + 1 }));
     } catch (error) {
+      console.error("Failed to add todo:", error);
       setTodos(previousTodos);
       setStats(previousStats);
       setText(savedText);
@@ -225,6 +242,7 @@ export default function Home() {
       });
       if (!res.ok) throw new Error("Failed to toggle todo");
     } catch (error) {
+      console.error("Failed to toggle todo:", error);
       setTodos(previousTodos);
       setStats(previousStats);
     }
@@ -276,6 +294,7 @@ export default function Home() {
       });
       if (!res.ok) throw new Error("Failed to save edit.");
     } catch (error) {
+      console.error("Failed to save edit:", error);
       setTodos(previousTodos);
     }
   };
@@ -698,6 +717,17 @@ export default function Home() {
               </div>
             )}
           </div>
+
+          {!loading && page < totalPages && (
+            <div className="text-right mb-4">
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-muted-foreground hover:bg-white/10 transition-all"
+              >
+                Load more
+              </button>
+            </div>
+          )}
 
           {/* Keyboard Shortcut Hint */}
           <div className="text-center text-xs text-muted-foreground/50">
