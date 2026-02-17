@@ -1,4 +1,5 @@
-import { todos, Todo, categories } from "@/lib/db";
+import { categories } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -7,55 +8,58 @@ export async function GET(request: Request) {
   const priority = searchParams.get("priority");
   const status = searchParams.get("status");
   const search = searchParams.get("search");
-
-  let filtered = [...todos];
-
-  if (category && category !== "all") {
-    filtered = filtered.filter((t) => t.category === category);
-  }
-
-  if (priority && priority !== "all") {
-    filtered = filtered.filter((t) => t.priority === priority);
-  }
-
-  if (status === "completed") {
-    filtered = filtered.filter((t) => t.done);
-  } else if (status === "active") {
-    filtered = filtered.filter((t) => !t.done);
-  }
-
-  if (search) {
-    filtered = filtered.filter((t) =>
-      t.text.toLowerCase().includes(search.toLowerCase()),
-    );
-  }
-
   const page = Math.max(1, Number(searchParams.get("page")) || 1);
   const limit = Math.max(
     1,
     Math.min(100, Number(searchParams.get("limit")) || 20),
   );
-
   const start = (page - 1) * limit;
-  const paginated = filtered.slice(start, start + limit);
+
+  let query = supabase.from("todos").select("*", { count: "exact" });
+
+  if (category && category !== "all") query = query.eq("category", category);
+  if (priority && priority !== "all") query = query.eq("priority", priority);
+  if (status === "completed") query = query.eq("done", true);
+  else if (status === "active") query = query.eq("done", false);
+  if (search) query = query.ilike("text", `%${search}%`);
+
+  query = query.range(start, start + limit - 1);
+
+  const { data: todos, count, error } = await query;
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  const mapped = todos?.map((t) => ({
+    ...t,
+    dueDate: t.due_date,
+    createdAt: t.created_at,
+    completedAt: t.completed_at,
+  }));
+
+  const { data: allTodos } = await supabase
+    .from("todos")
+    .select("done, due_date");
+
+  const total = allTodos?.length || 0;
+  const completed = allTodos?.filter((t) => t.done).length || 0;
+  const active = allTodos?.filter((t) => !t.done).length || 0;
+  const overdue =
+    allTodos?.filter(
+      (t) => !t.done && t.due_date && new Date(t.due_date) < new Date(),
+    ).length || 0;
 
   return NextResponse.json({
-    todos: paginated,
+    todos: mapped,
     categories,
     pagination: {
       page,
       limit,
-      total: filtered.length,
-      totalPages: Math.ceil(filtered.length / limit),
+      total: count || 0,
+      totalPages: Math.ceil((count || 0) / limit),
     },
-    stats: {
-      total: todos.length,
-      completed: todos.filter((t) => t.done).length,
-      active: todos.filter((t) => !t.done).length,
-      overdue: todos.filter(
-        (t) => !t.done && t.dueDate && new Date(t.dueDate) < new Date(),
-      ).length,
-    },
+    stats: { total, completed, active, overdue },
   });
 }
 
@@ -73,18 +77,30 @@ export async function POST(request: Request) {
     );
   }
 
-  const newTodo: Todo = {
-    id: Date.now(),
-    text: body.text.trim(),
-    done: false,
-    priority: body.priority || "medium",
-    category: body.category || "other",
-    dueDate: body.dueDate,
-    createdAt: new Date().toISOString(),
+  const { data, error } = await supabase
+    .from("todos")
+    .insert({
+      text: body.text.trim(),
+      done: false,
+      priority: body.priority || "medium",
+      category: body.category || "other",
+      due_date: body.dueDate || null,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  const mapped = {
+    ...data,
+    dueDate: data.due_date,
+    createdAt: data.created_at,
+    completedAt: data.completed_at,
   };
 
-  todos.push(newTodo);
-  return NextResponse.json(newTodo);
+  return NextResponse.json(mapped, { status: 201 });
 }
 
 export async function PUT(request: Request) {
@@ -97,42 +113,98 @@ export async function PUT(request: Request) {
     );
   }
 
-  const todo = todos.find((t) => t.id === body.id);
-  if (!todo) {
-    return NextResponse.json({ error: "Todo not found" }, { status: 404 });
-  }
-  if (body.text !== undefined) todo.text = body.text;
-  if (body.priority !== undefined) todo.priority = body.priority;
-  if (body.category !== undefined) todo.category = body.category;
-  if (body.dueDate !== undefined) todo.dueDate = body.dueDate;
-  if (body.done !== undefined) {
-    todo.done = body.done;
-    todo.completedAt = body.done ? new Date().toISOString() : undefined;
-  }
   if (body.toggleDone) {
-    todo.done = !todo.done;
-    todo.completedAt = todo.done ? new Date().toISOString() : undefined;
+    const { data: existing } = await supabase
+      .from("todos")
+      .select("done")
+      .eq("id", body.id)
+      .single();
+
+    if (!existing) {
+      return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+    }
+
+    const newDone = !existing.done;
+    const { data, error } = await supabase
+      .from("todos")
+      .update({
+        done: newDone,
+        completed_at: newDone ? new Date().toISOString() : null,
+      })
+      .eq("id", body.id)
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    const mapped = {
+      ...data,
+      dueDate: data.due_date,
+      createdAt: data.created_at,
+      completedAt: data.completed_at,
+    };
+
+    return NextResponse.json(mapped);
   }
 
-  return NextResponse.json(todo);
+  const updates: Record<string, unknown> = {};
+  if (body.text !== undefined) updates.text = body.text;
+  if (body.priority !== undefined) updates.priority = body.priority;
+  if (body.category !== undefined) updates.category = body.category;
+  if (body.dueDate !== undefined) updates.due_date = body.dueDate;
+  if (body.done !== undefined) {
+    updates.done = body.done;
+    updates.completed_at = body.done ? new Date().toISOString() : null;
+  }
+
+  const { data, error } = await supabase
+    .from("todos")
+    .update(updates)
+    .eq("id", body.id)
+    .select()
+    .single();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  if (!data) {
+    return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+  }
+
+  const mapped = {
+    ...data,
+    dueDate: data.due_date,
+    createdAt: data.created_at,
+    completedAt: data.completed_at,
+  };
+
+  return NextResponse.json(mapped);
 }
 
 export async function DELETE(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = Number(searchParams.get("id"));
 
-  if (!id || typeof id !== "number") {
+  if (!id || isNaN(id)) {
     return NextResponse.json(
       { error: "ID is required and must be a number." },
       { status: 400 },
     );
   }
 
-  const index = todos.findIndex((t) => t.id === id);
-  if (index === -1) {
+  const { data, error } = await supabase
+    .from("todos")
+    .delete()
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error || !data) {
     return NextResponse.json({ error: "Todo not found" }, { status: 404 });
   }
-  todos.splice(index, 1);
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, deleted: data });
 }

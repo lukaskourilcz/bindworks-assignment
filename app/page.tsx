@@ -2,6 +2,12 @@
 
 import { cn } from "@/lib/utils";
 import {
+  type Priority,
+  type Category,
+  type Todo,
+  type CategoryInfo,
+} from "@/lib/db";
+import {
   AlertCircle,
   Calendar,
   Check,
@@ -15,26 +21,6 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-
-type Priority = "low" | "medium" | "high";
-type Category = "personal" | "work" | "shopping" | "health" | "other";
-
-interface Todo {
-  id: number;
-  text: string;
-  done: boolean;
-  priority: Priority;
-  category: Category;
-  dueDate?: string;
-  createdAt: string;
-  completedAt?: string;
-}
-
-interface CategoryInfo {
-  id: Category;
-  label: string;
-  color: string;
-}
 
 interface Stats {
   total: number;
