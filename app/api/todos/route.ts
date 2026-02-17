@@ -53,7 +53,7 @@ export async function POST(request: Request) {
     body.text.trim().length === 0
   ) {
     return NextResponse.json(
-      { error: "Text is required and must be string." },
+      { error: "Text is required and must be a string." },
       { status: 400 },
     );
   }
@@ -75,22 +75,31 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   const body = await request.json();
 
-  const todo = todos.find((t) => t.id === body.id);
-  if (todo) {
-    if (body.text !== undefined) todo.text = body.text;
-    if (body.priority !== undefined) todo.priority = body.priority;
-    if (body.category !== undefined) todo.category = body.category;
-    if (body.dueDate !== undefined) todo.dueDate = body.dueDate;
-    if (body.done !== undefined) {
-      todo.done = body.done;
-      todo.completedAt = body.done ? new Date().toISOString() : undefined;
-    }
-    if (body.toggleDone) {
-      todo.done = !todo.done;
-      todo.completedAt = todo.done ? new Date().toISOString() : undefined;
-    }
+  if (!body.id || typeof body.id !== "number") {
+    return NextResponse.json(
+      { error: "ID is required and must be a number" },
+      { status: 400 },
+    );
   }
-  return NextResponse.json(todo || {});
+
+  const todo = todos.find((t) => t.id === body.id);
+  if (!todo) {
+    return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+  }
+  if (body.text !== undefined) todo.text = body.text;
+  if (body.priority !== undefined) todo.priority = body.priority;
+  if (body.category !== undefined) todo.category = body.category;
+  if (body.dueDate !== undefined) todo.dueDate = body.dueDate;
+  if (body.done !== undefined) {
+    todo.done = body.done;
+    todo.completedAt = body.done ? new Date().toISOString() : undefined;
+  }
+  if (body.toggleDone) {
+    todo.done = !todo.done;
+    todo.completedAt = todo.done ? new Date().toISOString() : undefined;
+  }
+
+  return NextResponse.json(todo);
 }
 
 export async function DELETE(request: Request) {
