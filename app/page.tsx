@@ -95,6 +95,9 @@ export default function Home() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
 
+  // Debounce search
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
@@ -106,7 +109,7 @@ export default function Home() {
         if (filterCategory !== "all") params.set("category", filterCategory);
         if (filterPriority !== "all") params.set("priority", filterPriority);
         if (filterStatus !== "all") params.set("status", filterStatus);
-        if (searchQuery) params.set("search", searchQuery);
+        if (debouncedSearch) params.set("search", searchQuery);
 
         const res = await fetch(`/api/todos?${params}`, { signal });
         const data = await res.json();
@@ -127,7 +130,14 @@ export default function Home() {
     return () => {
       controller.abort();
     };
-  }, [filterCategory, filterPriority, filterStatus, searchQuery]);
+  }, [filterCategory, filterPriority, filterStatus, debouncedSearch]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const addTodo = async (e: React.FormEvent) => {
     e.preventDefault();
