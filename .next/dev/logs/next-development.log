@@ -1,1 +1,730 @@
 [00:00:01.526] Server  LOG     ✓ Ready in 1315ms
+[01:14:34.213] Server  LOG     ✓ Compiled in 312ms
+[01:14:35.009] Browser ERROR   ./app/page.tsx:116:30
+Parsing ecmascript source code failed
+  114 |
+  115 |   useEffect(() => {
+> 116 |     function abortController abortController
+      |                              ^^^^^^^^^^^^^^^
+  117 |     fetchTodos()
+  118 |   }, [filterCategory, filterPriority, filterStatus, searchQuery])
+  119 |
+
+Expected '(', got 'abortController'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:14:36.064] Server  LOG     ✓ Compiled in 83ms
+[01:14:36.999] Browser ERROR   ./app/page.tsx:117:5
+Parsing ecmascript source code failed
+  115 |   useEffect(() => {
+  116 |     function abortController 
+> 117 |     fetchTodos()
+      |     ^^^^^^^^^^
+  118 |   }, [filterCategory, filterPriority, filterStatus, searchQuery])
+  119 |
+  120 |   const addTodo = async (e: React.FormEvent) => {
+
+Expected '(', got 'fetchTodos'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:14:42.998] Browser ERROR   ./app/page.tsx:117:5
+Parsing ecmascript source code failed
+  115 |   useEffect(() => {
+  116 |     function abortController 
+> 117 |     fetchTodos()
+      |     ^^^^^^^^^^
+  118 |   }, [filterCategory, filterPriority, filterStatus, searchQuery])
+  119 |
+  120 |   const addTodo = async (e: React.FormEvent) => {
+
+Expected '(', got 'fetchTodos'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:14:51.040] Server  LOG     ✓ Compiled in 103ms
+[01:14:52.633] Server  LOG     ✓ Compiled in 89ms
+[01:15:02.510] Server  LOG     ✓ Compiled in 81ms
+[01:15:04.831] Server  LOG     ✓ Compiled in 64ms
+[01:15:35.318] Server  LOG     ✓ Compiled in 84ms
+[01:15:40.496] Server  LOG     ✓ Compiled in 78ms
+[01:15:40.999] Browser ERROR   ./app/page.tsx:118:3
+Parsing ecmascript source code failed
+  116 |     AbortController
+  117 |     fetchTodos(
+> 118 |   }, [filterCategory, filterPriority, filterStatus, searchQuery])
+      |   ^
+  119 |
+  120 |   const addTodo = async (e: React.FormEvent) => {
+  121 |     e.preventDefault()
+
+Expression expected
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:15:41.933] Server  LOG     ✓ Compiled in 79ms
+[01:15:53.297] Server  LOG     ✓ Compiled in 83ms
+[01:17:21.179] Server  LOG     ✓ Compiled in 63ms
+[01:17:26.201] Server  LOG     ✓ Compiled in 66ms
+[01:17:27.256] Server  LOG     ✓ Compiled in 56ms
+[01:17:28.670] Server  LOG     ✓ Compiled in 92ms
+[01:17:29.776] Server  LOG     ✓ Compiled in 49ms
+[01:17:34.522] Server  LOG     ✓ Compiled in 68ms
+[01:17:43.992] Server  LOG     ✓ Compiled in 92ms
+[01:17:47.050] Server  LOG     ✓ Compiled in 69ms
+[01:18:10.383] Server  LOG     ✓ Compiled in 99ms
+[01:18:11.002] Browser ERROR   ./app/page.tsx:102:12
+Parsing ecmascript source code failed
+  100 |     const signal = controller.signal
+  101 |       const fetchTodos = () => {
+> 102 |         try()
+      |            ^
+  103 |     const params = new URLSearchParams()
+  104 |     if (filterCategory !== "all") params.set("category", filterCategory)
+  105 |     if (filterPriority !== "all") params.set("priority", filterPriority)
+
+Expected '{', got '('
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:18:11.999] Browser ERROR   ./app/page.tsx:102:12
+Parsing ecmascript source code failed
+  100 |     const signal = controller.signal
+  101 |       const fetchTodos = () => {
+> 102 |         try(
+      |            ^
+  103 |     const params = new URLSearchParams()
+  104 |     if (filterCategory !== "all") params.set("category", filterCategory)
+  105 |     if (filterPriority !== "all") params.set("priority", filterPriority)
+
+Expected '{', got '('
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:18:31.998] Browser ERROR   ./app/page.tsx:102:12
+Parsing ecmascript source code failed
+  100 |     const signal = controller.signal
+  101 |       const fetchTodos = async () => {
+> 102 |         try(
+      |            ^
+  103 |     const params = new URLSearchParams()
+  104 |     if (filterCategory !== "all") params.set("category", filterCategory)
+  105 |     if (filterPriority !== "all") params.set("priority", filterPriority)
+
+Expected '{', got '('
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:18:33.998] Browser ERROR   ./app/page.tsx:102:12
+Parsing ecmascript source code failed
+  100 |     const signal = controller.signal
+  101 |       const fetchTodos = async () => {
+> 102 |         try(
+      |            ^
+  103 |     const params = new URLSearchParams()
+  104 |     if (filterCategory !== "all") params.set("category", filterCategory)
+  105 |     if (filterPriority !== "all") params.set("priority", filterPriority)
+
+Expected '{', got '('
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:18:38.415] Server  LOG     ✓ Compiled in 106ms
+[01:18:38.998] Browser ERROR   ./app/page.tsx:118:6
+Parsing ecmascript source code failed
+  116 |       })
+  117 |   }
+> 118 |   }, [filterCategory, filterPriority, filterStatus, searchQuery])
+      |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  119 |
+  120 |   const addTodo = async (e: React.FormEvent) => {
+  121 |     e.preventDefault()
+
+'const' declarations must be initialized
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:18:38.998] Browser ERROR   ./app/page.tsx:118:65
+Parsing ecmascript source code failed
+  116 |       })
+  117 |   }
+> 118 |   }, [filterCategory, filterPriority, filterStatus, searchQuery])
+      |                                                                 ^
+  119 |
+  120 |   const addTodo = async (e: React.FormEvent) => {
+  121 |     e.preventDefault()
+
+Expected a semicolon
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:18:43.999] Browser ERROR   ./app/page.tsx:120:6
+Parsing ecmascript source code failed
+  118 |     )
+  119 |   }
+> 120 |   }, [filterCategory, filterPriority, filterStatus, searchQuery])
+      |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  121 |
+  122 |   const addTodo = async (e: React.FormEvent) => {
+  123 |     e.preventDefault()
+
+'const' declarations must be initialized
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:18:43.999] Browser ERROR   ./app/page.tsx:120:65
+Parsing ecmascript source code failed
+  118 |     )
+  119 |   }
+> 120 |   }, [filterCategory, filterPriority, filterStatus, searchQuery])
+      |                                                                 ^
+  121 |
+  122 |   const addTodo = async (e: React.FormEvent) => {
+  123 |     e.preventDefault()
+
+Expected a semicolon
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:18:53.763] Server  LOG     ✓ Compiled in 113ms
+[01:18:53.998] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: )
+      |         ^^^^^
+  117 |     
+  118 |     )
+  119 |   }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:18:57.000] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any)
+      |         ^^^^^
+  117 |     
+  118 |     )
+  119 |   }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:18:59.999] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         
+  118 |       }
+  119 |     
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:19:05.998] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== )
+  118 |       }
+  119 |     
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:19:09.002] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError")
+  118 |       }
+  119 |     
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:19:11.999] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:19:15.998] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           console.error()
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:19:18.001] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           console.error("Fetc")
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:19:19.997] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           console.error("Fe")
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:19:23.999] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           console.error("Failed ot fetch d")
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:19:24.998] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           console.error("Failed ot fetch data")
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:19:29.003] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           console.error("Failed ot fetch data: ", error)
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:19:33.999] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           console.error("Failed to fetch data: ", error)
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:19:40.998] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           console.error("Failed to fetch data: ", error)
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:19:42.998] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           console.error("Failed to fetch data: ", error)
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:20:01.000] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           console.error("Failed to fetch data: ", error)
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:20:03.998] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           console.error("Failed to fetch data: ", error)
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:20:08.001] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           console.error("Failed to fetch data: ", error)
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:20:11.999] Browser ERROR   ./app/page.tsx:116:9
+Parsing ecmascript source code failed
+  114 |         setStats(data.stats)
+  115 |         setLoading(false)
+> 116 |       } catch (error: any) {
+      |         ^^^^^
+  117 |         if(error.name !== "AbortError") {
+  118 |           console.error("Failed to fetch data: ", error)
+  119 |         }
+
+Expected ',', got 'catch'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:21:24.246] Server  LOG     ✓ Compiled in 109ms
+[01:21:30.923] Server  LOG     ✓ Compiled in 58ms
+[01:21:32.932] Server  LOG     ✓ Compiled in 50ms
+[01:23:57.711] Server  LOG     ✓ Compiled in 76ms
+[01:23:59.891] Server  LOG     ✓ Compiled in 50ms
+[01:24:04.227] Server  LOG     ✓ Compiled in 74ms
+[01:24:06.952] Server  LOG     ✓ Compiled in 82ms
+[01:24:07.998] Browser ERROR   ./app/page.tsx:119:46
+Parsing ecmascript source code failed
+  117 |         setLoading(false);
+  118 |       } catch (error: unknown) {
+> 119 |         if (error instanceof !== "AbortError") {
+      |                                              ^
+  120 |           console.error("Failed to fetch data:", error);
+  121 |         }
+  122 |       }
+
+Expected a semicolon
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:24:07.998] Browser ERROR   ./app/page.tsx:119:30
+Parsing ecmascript source code failed
+  117 |         setLoading(false);
+  118 |       } catch (error: unknown) {
+> 119 |         if (error instanceof !== "AbortError") {
+      |                              ^^^
+  120 |           console.error("Failed to fetch data:", error);
+  121 |         }
+  122 |       }
+
+Expression expected
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:24:15.169] Server  LOG     ✓ Compiled in 111ms
+[01:24:15.999] Browser ERROR   ./app/page.tsx:119:56
+Parsing ecmascript source code failed
+  117 |         setLoading(false);
+  118 |       } catch (error: unknown) {
+> 119 |         if (error instanceof Error &&  !== "AbortError") {
+      |                                                        ^
+  120 |           console.error("Failed to fetch data:", error);
+  121 |         }
+  122 |       }
+
+Expected a semicolon
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:24:15.999] Browser ERROR   ./app/page.tsx:119:40
+Parsing ecmascript source code failed
+  117 |         setLoading(false);
+  118 |       } catch (error: unknown) {
+> 119 |         if (error instanceof Error &&  !== "AbortError") {
+      |                                        ^^^
+  120 |           console.error("Failed to fetch data:", error);
+  121 |         }
+  122 |       }
+
+Expression expected
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]

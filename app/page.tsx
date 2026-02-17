@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 import {
   AlertCircle,
   Calendar,
@@ -13,34 +13,34 @@ import {
   Tag,
   Trash2,
   X,
-} from "lucide-react"
-import { useEffect, useState } from "react"
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
-type Priority = "low" | "medium" | "high"
-type Category = "personal" | "work" | "shopping" | "health" | "other"
+type Priority = "low" | "medium" | "high";
+type Category = "personal" | "work" | "shopping" | "health" | "other";
 
 interface Todo {
-  id: number
-  text: string
-  done: boolean
-  priority: Priority
-  category: Category
-  dueDate?: string
-  createdAt: string
-  completedAt?: string
+  id: number;
+  text: string;
+  done: boolean;
+  priority: Priority;
+  category: Category;
+  dueDate?: string;
+  createdAt: string;
+  completedAt?: string;
 }
 
 interface CategoryInfo {
-  id: Category
-  label: string
-  color: string
+  id: Category;
+  label: string;
+  color: string;
 }
 
 interface Stats {
-  total: number
-  completed: number
-  active: number
-  overdue: number
+  total: number;
+  completed: number;
+  active: number;
+  overdue: number;
 }
 
 const priorityConfig = {
@@ -62,65 +62,78 @@ const priorityConfig = {
     bg: "bg-red-400/10",
     border: "border-red-400/30",
   },
-}
+};
 
 export default function Home() {
-  const [todos, setTodos] = useState<Todo[]>([])
-  const [categories, setCategories] = useState<CategoryInfo[]>([])
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [categories, setCategories] = useState<CategoryInfo[]>([]);
   const [stats, setStats] = useState<Stats>({
     total: 0,
     completed: 0,
     active: 0,
     overdue: 0,
-  })
-  const [loading, setLoading] = useState(true)
+  });
+  const [loading, setLoading] = useState(true);
 
   // Form state
-  const [text, setText] = useState("")
-  const [priority, setPriority] = useState<Priority>("medium")
-  const [category, setCategory] = useState<Category>("other")
-  const [dueDate, setDueDate] = useState("")
-  const [showForm, setShowForm] = useState(false)
+  const [text, setText] = useState("");
+  const [priority, setPriority] = useState<Priority>("medium");
+  const [category, setCategory] = useState<Category>("other");
+  const [dueDate, setDueDate] = useState("");
+  const [showForm, setShowForm] = useState(false);
 
   // Filter state
-  const [searchQuery, setSearchQuery] = useState("")
-  const [filterCategory, setFilterCategory] = useState<Category | "all">("all")
-  const [filterPriority, setFilterPriority] = useState<Priority | "all">("all")
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterCategory, setFilterCategory] = useState<Category | "all">("all");
+  const [filterPriority, setFilterPriority] = useState<Priority | "all">("all");
   const [filterStatus, setFilterStatus] = useState<
     "all" | "active" | "completed"
-  >("all")
-  const [showFilters, setShowFilters] = useState(false)
+  >("all");
+  const [showFilters, setShowFilters] = useState(false);
 
   // Edit state
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const [editText, setEditText] = useState("")
-
-  const fetchTodos = () => {
-    const params = new URLSearchParams()
-    if (filterCategory !== "all") params.set("category", filterCategory)
-    if (filterPriority !== "all") params.set("priority", filterPriority)
-    if (filterStatus !== "all") params.set("status", filterStatus)
-    if (searchQuery) params.set("search", searchQuery)
-
-    fetch(`/api/todos?${params}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setTodos(data.todos)
-        setCategories(data.categories)
-        setStats(data.stats)
-        setLoading(false)
-      })
-  }
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editText, setEditText] = useState("");
 
   useEffect(() => {
-    fetchTodos()
-  }, [filterCategory, filterPriority, filterStatus, searchQuery])
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    const fetchTodos = async () => {
+      try {
+        const params = new URLSearchParams();
+
+        if (filterCategory !== "all") params.set("category", filterCategory);
+        if (filterPriority !== "all") params.set("priority", filterPriority);
+        if (filterStatus !== "all") params.set("status", filterStatus);
+        if (searchQuery) params.set("search", searchQuery);
+
+        const res = await fetch(`/api/todos?${params}`, { signal });
+        const data = await res.json();
+
+        setTodos(data.todos);
+        setCategories(data.categories);
+        setStats(data.stats);
+        setLoading(false);
+      } catch (error: unknown) {
+        if (error instanceof Error && error.name !== "AbortError") {
+          console.error("Failed to fetch data:", error);
+        }
+      }
+    };
+
+    fetchTodos();
+
+    return () => {
+      controller.abort();
+    };
+  }, [filterCategory, filterPriority, filterStatus, searchQuery]);
 
   const addTodo = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!text.trim()) return
+    e.preventDefault();
+    if (!text.trim()) return;
 
-    const tempId = Date.now()
+    const tempId = Date.now();
     const newTodo: Todo = {
       id: tempId,
       text,
@@ -129,13 +142,13 @@ export default function Home() {
       category,
       dueDate: dueDate || undefined,
       createdAt: new Date().toISOString(),
-    }
-    setTodos((prev) => [...prev, newTodo])
-    setText("")
-    setDueDate("")
-    setPriority("medium")
-    setCategory("other")
-    setShowForm(false)
+    };
+    setTodos((prev) => [...prev, newTodo]);
+    setText("");
+    setDueDate("");
+    setPriority("medium");
+    setCategory("other");
+    setShowForm(false);
 
     fetch("/api/todos", {
       method: "POST",
@@ -149,14 +162,14 @@ export default function Home() {
     })
       .then((res) => res.json())
       .then((created) => {
-        setTodos((prev) => prev.map((t) => (t.id === tempId ? created : t)))
-        setStats((s) => ({ ...s, total: s.total + 1, active: s.active + 1 }))
-      })
-  }
+        setTodos((prev) => prev.map((t) => (t.id === tempId ? created : t)));
+        setStats((s) => ({ ...s, total: s.total + 1, active: s.active + 1 }));
+      });
+  };
 
   const toggleTodo = (id: number) => {
-    const todo = todos.find((t) => t.id === id)
-    if (!todo) return
+    const todo = todos.find((t) => t.id === id);
+    if (!todo) return;
 
     setTodos((prev) =>
       prev.map((t) =>
@@ -166,95 +179,95 @@ export default function Home() {
               done: !t.done,
               completedAt: !t.done ? new Date().toISOString() : undefined,
             }
-          : t
-      )
-    )
+          : t,
+      ),
+    );
     setStats((s) => ({
       ...s,
       completed: todo.done ? s.completed - 1 : s.completed + 1,
       active: todo.done ? s.active + 1 : s.active - 1,
-    }))
+    }));
 
     fetch("/api/todos", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, toggleDone: true }),
-    })
-  }
+    });
+  };
 
   const deleteTodo = (id: number) => {
-    const todo = todos.find((t) => t.id === id)
-    setTodos((prev) => prev.filter((t) => t.id !== id))
+    const todo = todos.find((t) => t.id === id);
+    setTodos((prev) => prev.filter((t) => t.id !== id));
     if (todo) {
       setStats((s) => ({
         ...s,
         total: s.total - 1,
         completed: todo.done ? s.completed - 1 : s.completed,
         active: !todo.done ? s.active - 1 : s.active,
-      }))
+      }));
     }
 
-    fetch(`/api/todos?id=${id}`, { method: "DELETE" })
-  }
+    fetch(`/api/todos?id=${id}`, { method: "DELETE" });
+  };
 
   const startEdit = (todo: Todo) => {
-    setEditingId(todo.id)
-    setEditText(todo.text)
-  }
+    setEditingId(todo.id);
+    setEditText(todo.text);
+  };
 
   const saveEdit = (id: number) => {
-    if (!editText.trim()) return
+    if (!editText.trim()) return;
 
     setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, text: editText } : t))
-    )
-    setEditingId(null)
+      prev.map((t) => (t.id === id ? { ...t, text: editText } : t)),
+    );
+    setEditingId(null);
 
     fetch("/api/todos", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, text: editText }),
-    })
-  }
+    });
+  };
 
   const updateTodoPriority = (id: number, newPriority: Priority) => {
     setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, priority: newPriority } : t))
-    )
+      prev.map((t) => (t.id === id ? { ...t, priority: newPriority } : t)),
+    );
 
     fetch("/api/todos", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, priority: newPriority }),
-    })
-  }
+    });
+  };
 
   const isOverdue = (todo: Todo) => {
-    if (!todo.dueDate || todo.done) return false
-    return new Date(todo.dueDate) < new Date()
-  }
+    if (!todo.dueDate || todo.done) return false;
+    return new Date(todo.dueDate) < new Date();
+  };
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    const today = new Date()
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
+    const date = new Date(dateStr);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-    if (date.toDateString() === today.toDateString()) return "Today"
-    if (date.toDateString() === tomorrow.toDateString()) return "Tomorrow"
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-  }
+    if (date.toDateString() === today.toDateString()) return "Today";
+    if (date.toDateString() === tomorrow.toDateString()) return "Tomorrow";
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  };
 
   const getCategoryColor = (cat: Category) => {
-    return categories.find((c) => c.id === cat)?.color || "#6b7280"
-  }
+    return categories.find((c) => c.id === cat)?.color || "#6b7280";
+  };
 
   const activeFiltersCount = [
     filterCategory !== "all",
     filterPriority !== "all",
     filterStatus !== "all",
     searchQuery !== "",
-  ].filter(Boolean).length
+  ].filter(Boolean).length;
 
   return (
     <main className="min-h-screen flex items-center justify-center p-4">
@@ -326,7 +339,7 @@ export default function Home() {
                   "flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all",
                   showFilters || activeFiltersCount > 0
                     ? "bg-violet-500/20 border-violet-500/50 text-violet-300"
-                    : "bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10"
+                    : "bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10",
                 )}
               >
                 <Filter className="w-4 h-4" />
@@ -378,7 +391,7 @@ export default function Home() {
                   value={filterStatus}
                   onChange={(e) =>
                     setFilterStatus(
-                      e.target.value as "all" | "active" | "completed"
+                      e.target.value as "all" | "active" | "completed",
                     )
                   }
                   className="bg-white/10 border border-white/10 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50"
@@ -390,10 +403,10 @@ export default function Home() {
                 {activeFiltersCount > 0 && (
                   <button
                     onClick={() => {
-                      setFilterCategory("all")
-                      setFilterPriority("all")
-                      setFilterStatus("all")
-                      setSearchQuery("")
+                      setFilterCategory("all");
+                      setFilterPriority("all");
+                      setFilterStatus("all");
+                      setSearchQuery("");
                     }}
                     className="text-sm text-muted-foreground hover:text-white transition-colors flex items-center gap-1"
                   >
@@ -492,7 +505,7 @@ export default function Home() {
                       "group relative flex items-start gap-3 p-4 rounded-xl border transition-all duration-200",
                       isOverdue(todo)
                         ? "bg-red-500/10 border-red-500/30"
-                        : "bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20"
+                        : "bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20",
                     )}
                   >
                     {/* Checkbox */}
@@ -502,7 +515,7 @@ export default function Home() {
                         "flex-shrink-0 mt-0.5 flex items-center justify-center w-5 h-5 rounded-full border-2 transition-all duration-300",
                         todo.done
                           ? "bg-green-500 border-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"
-                          : "border-muted-foreground hover:border-white"
+                          : "border-muted-foreground hover:border-white",
                       )}
                     >
                       {todo.done && (
@@ -545,7 +558,7 @@ export default function Home() {
                               "text-sm font-medium cursor-pointer transition-colors",
                               todo.done
                                 ? "text-muted-foreground line-through decoration-white/20"
-                                : "text-foreground hover:text-violet-300"
+                                : "text-foreground hover:text-violet-300",
                             )}
                           >
                             {todo.text}
@@ -556,7 +569,7 @@ export default function Home() {
                               className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full"
                               style={{
                                 backgroundColor: `${getCategoryColor(
-                                  todo.category
+                                  todo.category,
                                 )}20`,
                                 color: getCategoryColor(todo.category),
                               }}
@@ -571,7 +584,7 @@ export default function Home() {
                               className={cn(
                                 "inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full",
                                 priorityConfig[todo.priority].bg,
-                                priorityConfig[todo.priority].color
+                                priorityConfig[todo.priority].color,
                               )}
                             >
                               {priorityConfig[todo.priority].label}
@@ -584,7 +597,7 @@ export default function Home() {
                                   "inline-flex items-center gap-1 text-xs",
                                   isOverdue(todo)
                                     ? "text-red-400"
-                                    : "text-muted-foreground"
+                                    : "text-muted-foreground",
                                 )}
                               >
                                 {isOverdue(todo) ? (
@@ -607,7 +620,7 @@ export default function Home() {
                         onChange={(e) =>
                           updateTodoPriority(
                             todo.id,
-                            e.target.value as Priority
+                            e.target.value as Priority,
                           )
                         }
                         onClick={(e) => e.stopPropagation()}
@@ -650,5 +663,5 @@ export default function Home() {
         </div>
       </div>
     </main>
-  )
+  );
 }
