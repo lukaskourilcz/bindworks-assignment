@@ -133,6 +133,13 @@ export default function Home() {
     e.preventDefault();
     if (!text.trim()) return;
 
+    const previousTodos = todos;
+    const previousStats = stats;
+    const savedText = text;
+    const savedPriority = priority;
+    const savedCategory = category;
+    const savedDueDate = dueDate;
+
     const tempId = Date.now();
     const newTodo: Todo = {
       id: tempId,
@@ -150,26 +157,38 @@ export default function Home() {
     setCategory("other");
     setShowForm(false);
 
-    fetch("/api/todos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        text,
-        priority,
-        category,
-        dueDate: dueDate || undefined,
-      }),
-    })
-      .then((res) => res.json())
-      .then((created) => {
-        setTodos((prev) => prev.map((t) => (t.id === tempId ? created : t)));
-        setStats((s) => ({ ...s, total: s.total + 1, active: s.active + 1 }));
+    try {
+      const res = await fetch("/api/todos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: savedText,
+          priority: savedPriority,
+          category: savedCategory,
+          dueDate: savedDueDate || undefined,
+        }),
       });
+      if (!res.ok) throw new Error("Failed to add todo");
+      const created = await res.json();
+      setTodos((prev) => prev.map((t) => (t.id === tempId ? created : t)));
+      setStats((s) => ({ ...s, total: s.total + 1, active: s.active + 1 }));
+    } catch (error) {
+      setTodos(previousTodos);
+      setStats(previousStats);
+      setText(savedText);
+      setPriority(savedPriority);
+      setCategory(savedCategory);
+      setDueDate(savedDueDate);
+      setShowForm(true);
+    }
   };
 
-  const toggleTodo = (id: number) => {
+  const toggleTodo = async (id: number) => {
     const todo = todos.find((t) => t.id === id);
     if (!todo) return;
+
+    const previousTodos = todos;
+    const previousStats = stats;
 
     setTodos((prev) =>
       prev.map((t) =>
@@ -188,15 +207,24 @@ export default function Home() {
       active: todo.done ? s.active + 1 : s.active - 1,
     }));
 
-    fetch("/api/todos", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, toggleDone: true }),
-    });
+    try {
+      const res = await fetch("/api/todos", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, toggleDone: true }),
+      });
+      if (!res.ok) throw new Error("Failed to toggle todo");
+    } catch (error) {
+      setTodos(previousTodos);
+      setStats(previousStats);
+    }
   };
 
-  const deleteTodo = (id: number) => {
+  const deleteTodo = async (id: number) => {
     const todo = todos.find((t) => t.id === id);
+
+    const previousTodos = todos;
+    const previousStats = stats;
     setTodos((prev) => prev.filter((t) => t.id !== id));
     if (todo) {
       setStats((s) => ({
@@ -207,7 +235,13 @@ export default function Home() {
       }));
     }
 
-    fetch(`/api/todos?id=${id}`, { method: "DELETE" });
+    try {
+      const res = await fetch(`/api/todos?id=${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete todo");
+    } catch {
+      setTodos(previousTodos);
+      setStats(previousStats);
+    }
   };
 
   const startEdit = (todo: Todo) => {
@@ -215,31 +249,43 @@ export default function Home() {
     setEditText(todo.text);
   };
 
-  const saveEdit = (id: number) => {
+  const saveEdit = async (id: number) => {
     if (!editText.trim()) return;
+    const previousTodos = todos;
 
     setTodos((prev) =>
       prev.map((t) => (t.id === id ? { ...t, text: editText } : t)),
     );
     setEditingId(null);
 
-    fetch("/api/todos", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, text: editText }),
-    });
+    try {
+      const res = await fetch("/api/todos", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, text: editText }),
+      });
+      if (!res.ok) throw new Error("Failed to save edit.");
+    } catch (error) {
+      setTodos(previousTodos);
+    }
   };
 
-  const updateTodoPriority = (id: number, newPriority: Priority) => {
+  const updateTodoPriority = async (id: number, newPriority: Priority) => {
+    const previousTodos = todos;
     setTodos((prev) =>
       prev.map((t) => (t.id === id ? { ...t, priority: newPriority } : t)),
     );
 
-    fetch("/api/todos", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, priority: newPriority }),
-    });
+    try {
+      const res = await fetch("/api/todos", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, priority: newPriority }),
+      });
+      if (!res.ok) throw new Error("Failed to update Todo priority.");
+    } catch {
+      setTodos(previousTodos);
+    }
   };
 
   const isOverdue = (todo: Todo) => {
