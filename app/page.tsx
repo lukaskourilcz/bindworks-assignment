@@ -50,8 +50,8 @@ export default function Home() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [hasMore, setHasMore] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
@@ -65,20 +65,15 @@ export default function Home() {
         if (filterPriority !== "all") params.set("priority", filterPriority);
         if (filterStatus !== "all") params.set("status", filterStatus);
         if (debouncedSearch) params.set("search", debouncedSearch);
-        params.set("page", String(page));
-        params.set("limit", "20");
 
-        const res = await fetch(`/api/todos?${params}`, { signal });
+        const res = await fetch(`/api/todos?${params}&page=1&limit=${limit}`, {
+          signal,
+        });
         const data = await res.json();
-
-        if (page === 1) {
-          setTodos(data.todos);
-        } else {
-          setTodos((prev) => [...prev, ...data.todos]);
-        }
+        setTodos(data.todos);
         setCategories(data.categories);
         setStats(data.stats);
-        setTotalPages(data.pagination.totalPages);
+        setHasMore(data.todos.length < data.pagination.total);
         setLoading(false);
       } catch (error: unknown) {
         if (error instanceof Error && error.name !== "AbortError") {
@@ -97,8 +92,8 @@ export default function Home() {
     filterPriority,
     filterStatus,
     debouncedSearch,
-    page,
     refreshKey,
+    limit,
   ]);
 
   useEffect(() => {
@@ -107,16 +102,11 @@ export default function Home() {
   }, [searchQuery]);
 
   useEffect(() => {
-    setPage(1);
-  }, [filterCategory, filterPriority, filterStatus, debouncedSearch]);
-
-  useEffect(() => {
     const supabase = createClient();
 
     const channel = supabase
       .channel("todos-updates")
       .on("broadcast", { event: "todo-change" }, () => {
-        setPage(1);
         setRefreshKey((k) => k + 1);
       })
       .subscribe();
@@ -299,11 +289,11 @@ export default function Home() {
   ].filter(Boolean).length;
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
+    <main className="h-screen flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
 
-      <div className="relative w-full max-w-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
-        <div className="glass-card rounded-2xl p-8">
+      <div className="relative w-full max-w-xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+        <div className="glass-card rounded-2xl p-6 max-h-[85vh] flex flex-col overflow-hidden">
           <Header onSignOut={handleSignOut} />
 
           {!loading && <StatsBar stats={stats} />}
@@ -324,7 +314,6 @@ export default function Home() {
             categories={categories}
             activeFiltersCount={activeFiltersCount}
           />
-
           {showForm && (
             <TodoForm
               text={text}
@@ -340,7 +329,6 @@ export default function Home() {
               onCancel={() => setShowForm(false)}
             />
           )}
-
           <TodoList
             todos={todos}
             categories={categories}
@@ -358,12 +346,14 @@ export default function Home() {
             onSaveEdit={saveEdit}
             onCancelEdit={() => setEditingId(null)}
             onUpdatePriority={updateTodoPriority}
+            showForm={showForm}
+            showFilters={showFilters}
           />
 
-          {!loading && page < totalPages && (
-            <div className="text-right mb-4">
+          {!loading && hasMore && (
+            <div className="text-right my-4">
               <button
-                onClick={() => setPage((p) => p + 1)}
+                onClick={() => setLimit((l) => l + 20)}
                 className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-muted-foreground hover:bg-white/10 transition-all"
               >
                 Load more
@@ -371,7 +361,7 @@ export default function Home() {
             </div>
           )}
 
-          <div className="text-center text-xs text-muted-foreground/50">
+          <div className="text-center text-xs text-muted-foreground/50 shrink-0">
             <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[10px]">
               Enter
             </kbd>{" "}

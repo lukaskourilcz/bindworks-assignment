@@ -18,6 +18,8 @@ interface TodoListProps {
   onSaveEdit: (id: number) => void;
   onCancelEdit: () => void;
   onUpdatePriority: (id: number, priority: Priority) => void;
+  showForm?: boolean;
+  showFilters?: boolean;
 }
 
 export function TodoList({
@@ -34,18 +36,31 @@ export function TodoList({
   onSaveEdit,
   onCancelEdit,
   onUpdatePriority,
+  showForm,
+  showFilters,
 }: TodoListProps) {
+  const maxHeight = () => {
+    if (showForm && showFilters) return "max-h-[65px]";
+    if (showForm) return "max-h-[129px]";
+    if (showFilters) return "max-h-[216px]";
+    return "max-h-[280px]";
+  };
+
   return (
-    <div className="space-y-2 mb-6 min-h-[200px] max-h-[400px] overflow-y-auto">
+    <div className={`space-y-2 mb-6 overflow-y-auto ${maxHeight()}`}>
       {loading ? (
         <div className="flex flex-col items-center justify-center h-full space-y-4 py-12 text-muted-foreground/50">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-xs font-medium uppercase tracking-widest">Loading Tasks...</p>
+          <p className="text-xs font-medium uppercase tracking-widest">
+            Loading Tasks...
+          </p>
         </div>
       ) : todos.length === 0 ? (
-        <div className="text-center py-12 border-2 border-dashed border-white/5 rounded-xl bg-white/5">
+        <div className="text-center py-14 border-2 border-dashed border-white/5 rounded-xl bg-white/5">
           <p className="text-muted-foreground">
-            {activeFiltersCount > 0 ? "No tasks match your filters." : "No tasks yet. Add one above!"}
+            {activeFiltersCount > 0
+              ? "No tasks match your filters."
+              : "No tasks yet. Add one above!"}
           </p>
         </div>
       ) : (

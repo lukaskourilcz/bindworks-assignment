@@ -258,7 +258,7 @@ export async function DELETE(request: Request) {
     .select()
     .single();
 
-   if (error) {
+  if (error) {
     if (error.code === "PGRST116") {
       return NextResponse.json({ error: "Todo not found" }, { status: 404 });
     }

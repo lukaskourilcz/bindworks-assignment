@@ -32,7 +32,7 @@ export function TodoForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="p-4 bg-white/5 rounded-xl border border-white/10 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200"
+      className="p-4 mb-3 bg-white/5 rounded-xl border border-white/10 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200"
     >
       <input
         type="text"
@@ -49,7 +49,9 @@ export function TodoForm({
           className="bg-white/10 border border-white/10 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50"
         >
           {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.label}</option>
+            <option key={c.id} value={c.id}>
+              {c.label}
+            </option>
           ))}
         </select>
         <select
