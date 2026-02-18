@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import "./globals.css"
+import { Toaster } from "sonner"
 
 export const metadata: Metadata = {
   title: "TaskMaster Pro",
@@ -26,6 +27,7 @@ export default function RootLayout({
         />
       </head>
       <body>{children}</body>
+      <Toaster theme="dark" position="top-right" richColors />
     </html>
   )
 }

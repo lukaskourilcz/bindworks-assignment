@@ -13,6 +13,7 @@ import { TodoFilters } from "./components/TodoFilters";
 import { TodoForm } from "./components/TodoForm";
 import { TodoList } from "./components/TodoList";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 interface Stats {
   total: number;
@@ -81,7 +82,8 @@ export default function Home() {
         setLoading(false);
       } catch (error: unknown) {
         if (error instanceof Error && error.name !== "AbortError") {
-          console.error("Failed to fetch data:", error);
+          console.error("Failed to fetch data:", error)
+          toast.error("Failed to load todos. Please try again");
         }
       }
     };
@@ -126,6 +128,7 @@ export default function Home() {
 
   const handleSignOut = async () => {
     await fetch("/api/auth/signout", { method: "POST" });
+    toast.success("Successfully signed out.");
     window.location.href = "/login";
   };
 
@@ -174,6 +177,7 @@ export default function Home() {
       setStats((s) => ({ ...s, total: s.total + 1, active: s.active + 1 }));
     } catch (error) {
       console.error("Failed to add todo:", error);
+      toast.error("Failed to add todo. Please try again");
       setTodos(previousTodos);
       setStats(previousStats);
       setText(savedText);
@@ -216,6 +220,7 @@ export default function Home() {
       if (!res.ok) throw new Error("Failed to toggle todo");
     } catch (error) {
       console.error("Failed to toggle todo:", error);
+      toast.error("Failed to toggle todo. Please try again");
       setTodos(previousTodos);
       setStats(previousStats);
     }
@@ -239,6 +244,7 @@ export default function Home() {
       const res = await fetch(`/api/todos?id=${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete todo");
     } catch {
+      toast.error("Failed to delete todo.");
       setTodos(previousTodos);
       setStats(previousStats);
     }
@@ -261,6 +267,7 @@ export default function Home() {
       if (!res.ok) throw new Error("Failed to save edit.");
     } catch (error) {
       console.error("Failed to save edit:", error);
+      toast.error("Failed to save. Please try again");
       setTodos(previousTodos);
     }
   };
@@ -279,6 +286,7 @@ export default function Home() {
       });
       if (!res.ok) throw new Error("Failed to update Todo priority.");
     } catch {
+      toast.error("Failed to update priority.");
       setTodos(previousTodos);
     }
   };
