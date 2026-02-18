@@ -1,9 +1,3 @@
-# Fullstack Assignment
+# TaskMaster Assignment
 
-First, run the development server:
-
-```bash
-pnpm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000).
+Deployed here: [[http://localhost:3000](https://bindworks-assignment.vercel.app/)]([http://localhost:3000](https://bindworks-assignment.vercel.app/)).
