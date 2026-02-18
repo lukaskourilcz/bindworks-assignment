@@ -57,7 +57,7 @@
 
 #### Email Confirmation Flow
 
-- Currently Supabase Auth is configured with email/password but the email confirmation flow is very basic with email/password being the only possible way of registering/login. A proper flow would include a confirmation callback route and allow the user to choose from login via Gmail etc.
+- Currently Supabase Auth is configured with email/password but the email confirmation flow is very basic with email/password being the only possible way of registering/login. A proper flow would include a confirmation callback route and allow the user to choose from login via Gmail etc. Also, now user is unable to change password when forgotten.
 
 ---
 
