@@ -1,16 +1,16 @@
-import type { Metadata } from "next"
-import "./globals.css"
-import { Toaster } from "sonner"
+import type { Metadata } from "next";
+import "./globals.css";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "TaskMaster Pro",
   description: "The ultimate productivity tool.",
-}
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
@@ -26,8 +26,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
-      <Toaster theme="dark" position="top-right" richColors />
+      <body>
+        {children}
+        <Toaster theme="dark" position="top-right" richColors />
+      </body>
     </html>
-  )
+  );
 }

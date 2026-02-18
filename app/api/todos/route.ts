@@ -164,14 +164,17 @@ export async function PUT(request: Request) {
   }
 
   if (body.toggleDone) {
-    const { data: existing } = await supabase
+    const { data: existing, error: fetchError } = await supabase
       .from("todos")
       .select("done")
       .eq("id", body.id)
       .single();
 
-    if (!existing) {
-      return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+    if (fetchError) {
+      if (fetchError.code === "PGRST116") {
+        return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+      }
+      return NextResponse.json({ error: fetchError.message }, { status: 500 });
     }
 
     const newDone = !existing.done;
@@ -186,6 +189,9 @@ export async function PUT(request: Request) {
       .single();
 
     if (error) {
+      if (error.code === "PGRST116") {
+        return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+      }
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
@@ -211,11 +217,10 @@ export async function PUT(request: Request) {
     .single();
 
   if (error) {
+    if (error.code === "PGRST116") {
+      return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+    }
     return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  if (!data) {
-    return NextResponse.json({ error: "Todo not found" }, { status: 404 });
   }
 
   await broadcastChange(supabase);
@@ -253,8 +258,11 @@ export async function DELETE(request: Request) {
     .select()
     .single();
 
-  if (error || !data) {
-    return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+   if (error) {
+    if (error.code === "PGRST116") {
+      return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+    }
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
   await broadcastChange(supabase);
