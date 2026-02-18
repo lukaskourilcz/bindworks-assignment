@@ -1,24 +1,6 @@
-export type Priority = "low" | "medium" | "high";
-export type Category = "personal" | "work" | "shopping" | "health" | "other";
+import { CategoryInfo } from "./types";
 
-export interface Todo {
-  id: number;
-  text: string;
-  done: boolean;
-  priority: Priority;
-  category: Category;
-  dueDate?: string;
-  createdAt: string;
-  completedAt?: string;
-}
-
-export interface CategoryInfo {
-  id: Category;
-  label: string;
-  color: string;
-}
-
-export const categories: { id: Category; label: string; color: string }[] = [
+export const categories: CategoryInfo[] = [
   { id: "personal", label: "Personal", color: "#8b5cf6" },
   { id: "work", label: "Work", color: "#3b82f6" },
   { id: "shopping", label: "Shopping", color: "#10b981" },

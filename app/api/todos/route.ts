@@ -1,8 +1,9 @@
 import { categories } from "@/lib/db";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
+  const supabase = await createClient();
   const { searchParams } = new URL(request.url);
   const category = searchParams.get("category");
   const priority = searchParams.get("priority");
@@ -62,8 +63,16 @@ export async function GET(request: Request) {
     stats: { total, completed, active, overdue },
   });
 }
-
 export async function POST(request: Request) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const body = await request.json();
 
   if (
@@ -85,6 +94,7 @@ export async function POST(request: Request) {
       priority: body.priority || "medium",
       category: body.category || "other",
       due_date: body.dueDate || null,
+      user_id: user.id,
     })
     .select()
     .single();
@@ -104,6 +114,7 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  const supabase = await createClient();
   const body = await request.json();
 
   if (!body.id || typeof body.id !== "number") {
@@ -185,6 +196,7 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const supabase = await createClient();
   const { searchParams } = new URL(request.url);
   const id = Number(searchParams.get("id"));
 
