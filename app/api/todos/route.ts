@@ -1,8 +1,10 @@
 import { categories } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 import { createClient } from "@/lib/supabase/server";
+import { type SupabaseClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
-async function broadcastChange(supabase: any) {
+async function broadcastChange(supabase: SupabaseClient) {
   await supabase.channel("todos-updates").send({
     type: "broadcast",
     event: "todo-change",
@@ -10,8 +12,29 @@ async function broadcastChange(supabase: any) {
   });
 }
 
+function mapTodo(t: Record<string, unknown>) {
+  return {
+    ...t,
+    dueDate: t.due_date,
+    createdAt: t.created_at,
+    completedAt: t.completed_at,
+  };
+}
+
 export async function GET(request: Request) {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { success } = rateLimit(user?.id || "anonymous");
+  if (!success) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 },
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const category = searchParams.get("category");
   const priority = searchParams.get("priority");
@@ -40,13 +63,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const mapped = todos?.map((t) => ({
-    ...t,
-    dueDate: t.due_date,
-    createdAt: t.created_at,
-    completedAt: t.completed_at,
-  }));
-
   const { data: allTodos } = await supabase
     .from("todos")
     .select("done, due_date");
@@ -60,7 +76,7 @@ export async function GET(request: Request) {
     ).length || 0;
 
   return NextResponse.json({
-    todos: mapped,
+    todos: todos?.map(mapTodo),
     categories,
     pagination: {
       page,
@@ -71,6 +87,7 @@ export async function GET(request: Request) {
     stats: { total, completed, active, overdue },
   });
 }
+
 export async function POST(request: Request) {
   const supabase = await createClient();
 
@@ -79,6 +96,14 @@ export async function POST(request: Request) {
   } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { success } = rateLimit(user.id);
+  if (!success) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 },
+    );
   }
 
   const body = await request.json();
@@ -111,19 +136,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const mapped = {
-    ...data,
-    dueDate: data.due_date,
-    createdAt: data.created_at,
-    completedAt: data.completed_at,
-  };
-
   await broadcastChange(supabase);
-  return NextResponse.json(mapped, { status: 201 });
+  return NextResponse.json(mapTodo(data), { status: 201 });
 }
 
 export async function PUT(request: Request) {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { success } = rateLimit(user?.id || "anonymous");
+  if (!success) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 },
+    );
+  }
+
   const body = await request.json();
 
   if (!body.id || typeof body.id !== "number") {
@@ -159,15 +189,8 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const mapped = {
-      ...data,
-      dueDate: data.due_date,
-      createdAt: data.created_at,
-      completedAt: data.completed_at,
-    };
-
     await broadcastChange(supabase);
-    return NextResponse.json(mapped);
+    return NextResponse.json(mapTodo(data));
   }
 
   const updates: Record<string, unknown> = {};
@@ -195,19 +218,24 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Todo not found" }, { status: 404 });
   }
 
-  const mapped = {
-    ...data,
-    dueDate: data.due_date,
-    createdAt: data.created_at,
-    completedAt: data.completed_at,
-  };
-
   await broadcastChange(supabase);
-  return NextResponse.json(mapped);
+  return NextResponse.json(mapTodo(data));
 }
 
 export async function DELETE(request: Request) {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { success } = rateLimit(user?.id || "anonymous");
+  if (!success) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 },
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const id = Number(searchParams.get("id"));
 
