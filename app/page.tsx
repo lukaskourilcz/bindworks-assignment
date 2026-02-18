@@ -12,6 +12,7 @@ import { StatsBar } from "./components/StatsBar";
 import { TodoFilters } from "./components/TodoFilters";
 import { TodoForm } from "./components/TodoForm";
 import { TodoList } from "./components/TodoList";
+import { createClient } from "@/lib/supabase/client";
 
 interface Stats {
   total: number;
@@ -50,6 +51,7 @@ export default function Home() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -88,7 +90,14 @@ export default function Home() {
     return () => {
       controller.abort();
     };
-  }, [filterCategory, filterPriority, filterStatus, debouncedSearch, page]);
+  }, [
+    filterCategory,
+    filterPriority,
+    filterStatus,
+    debouncedSearch,
+    page,
+    refreshKey,
+  ]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
@@ -98,6 +107,22 @@ export default function Home() {
   useEffect(() => {
     setPage(1);
   }, [filterCategory, filterPriority, filterStatus, debouncedSearch]);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    const channel = supabase
+      .channel("todos-updates")
+      .on("broadcast", { event: "todo-change" }, () => {
+        setPage(1);
+        setRefreshKey((k) => k + 1);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const handleSignOut = async () => {
     await fetch("/api/auth/signout", { method: "POST" });

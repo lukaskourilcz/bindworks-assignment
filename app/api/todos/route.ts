@@ -2,6 +2,14 @@ import { categories } from "@/lib/db";
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
+async function broadcastChange(supabase: any) {
+  await supabase.channel("todos-updates").send({
+    type: "broadcast",
+    event: "todo-change",
+    payload: { time: Date.now() },
+  });
+}
+
 export async function GET(request: Request) {
   const supabase = await createClient();
   const { searchParams } = new URL(request.url);
@@ -110,6 +118,7 @@ export async function POST(request: Request) {
     completedAt: data.completed_at,
   };
 
+  await broadcastChange(supabase);
   return NextResponse.json(mapped, { status: 201 });
 }
 
@@ -157,6 +166,7 @@ export async function PUT(request: Request) {
       completedAt: data.completed_at,
     };
 
+    await broadcastChange(supabase);
     return NextResponse.json(mapped);
   }
 
@@ -192,6 +202,7 @@ export async function PUT(request: Request) {
     completedAt: data.completed_at,
   };
 
+  await broadcastChange(supabase);
   return NextResponse.json(mapped);
 }
 
@@ -218,5 +229,6 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Todo not found" }, { status: 404 });
   }
 
+  await broadcastChange(supabase);
   return NextResponse.json({ success: true, deleted: data });
 }
